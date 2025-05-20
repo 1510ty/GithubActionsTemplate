@@ -21,18 +21,18 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore MediaPlayerOS_Csharp_TestEdition.sln
+        run: dotnet restore AppName.sln
 
       - name: Build project (Debug)
-        run: dotnet build MediaPlayerOS_Csharp_TestEdition.sln --configuration Release --no-restore
+        run: dotnet build AppName.sln --configuration Release --no-restore
 
       # Publish Framework-dependent build
       - name: Publish Framework-dependent build
-        run: dotnet publish MediaPlayerOS_Csharp_TestEdition/MediaPlayerOS_Csharp_TestEdition.csproj --configuration Release --output publish/framework-dependent --runtime win-x64 --self-contained false
+        run: dotnet publish AppName/AppName.csproj --configuration Release --output publish/framework-dependent --runtime win-x64 --self-contained false
 
       # Publish Self-contained build
       - name: Publish Self-contained build
-        run: dotnet publish MediaPlayerOS_Csharp_TestEdition/MediaPlayerOS_Csharp_TestEdition.csproj --configuration Release --output publish/self-contained --runtime win-x64 --self-contained true /p:PublishTrimmed=false
+        run: dotnet publish AppName/AppName.csproj --configuration Release --output publish/self-contained --runtime win-x64 --self-contained true /p:PublishTrimmed=false
 
       # Upload both builds as artifacts
       - name: Upload Framework-dependent Artifact
