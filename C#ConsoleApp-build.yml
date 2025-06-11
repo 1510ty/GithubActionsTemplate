@@ -1,0 +1,45 @@
+name: コンソールアプリのビルドと成果物の生成
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    name: フレームワーク依存型と自己完結型のビルドと成果物の生成
+    runs-on: windows-latest
+
+    steps:
+      - name: ソースコードをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: .NET 8 SDK をセットアップ
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: 依存関係を復元
+        run: dotnet restore AppName.sln
+
+      - name: プロジェクトをビルド（Release）
+        run: dotnet build AppName.sln --configuration Release --no-restore
+
+      - name: フレームワーク依存型でパブリッシュ
+        run: dotnet publish AppName/AppName.csproj --configuration Release --output publish/framework-dependent --runtime win-x64 --self-contained false
+
+      - name: 自己完結型でパブリッシュ
+        run: dotnet publish AppName/AppName.csproj --configuration Release --output publish/self-contained --runtime win-x64 --self-contained true /p:PublishTrimmed=false
+
+      - name: フレームワーク依存型成果物をアップロード
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConsoleApp-framework-dependent
+          path: publish/framework-dependent
+
+      - name: 自己完結型成果物をアップロード
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConsoleApp-self-contained
+          path: publish/self-contained
